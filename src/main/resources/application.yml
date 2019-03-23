@@ -1,0 +1,19 @@
+server:
+  port: 8080
+  servlet:
+    context-path:
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/projetrecapitulatif?user=postgres&currentSchema=projetrecapitulatif
+    password: root
+    username: postgres
+  jpa:
+    database: POSTGRESQL
+    generate-ddl: true
+    hibernate.ddl-auto: create
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+
