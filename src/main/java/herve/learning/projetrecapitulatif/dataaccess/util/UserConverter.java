@@ -43,6 +43,10 @@ public class UserConverter {
         userEntity.setEmail(user.getEmail());
         userEntity.setPassword(encoder.encode(user.getPassword()));
         userEntity.setBirthday(user.getBirthday());
+        userEntity.setEnabled(user.getEnabled());
+        userEntity.setCredentialsNonExpired(user.getCredentialsNonExpired());
+        userEntity.setAccountNonLocked(user.getNonLocked());
+        userEntity.setAccountNonExpired(user.getNonExpired());
 
         return userEntity;
     }
@@ -63,36 +67,40 @@ public class UserConverter {
         return userEntity;
     }
 
-    public User toModel(UserEntity userEntity){
+    public User toModel(UserEntity userEntity) {
 
         User user = new User();
 
-        if(Objects.isNull(userEntity))
+        if (Objects.isNull(userEntity))
             throw new IllegalArgumentException(USER_IS_NULL);
 
-        if(Objects.nonNull(userEntity))
-            userEntity.setId(userEntity.getId());
+        if (Objects.nonNull(userEntity)) {
+            user.setId(userEntity.getId());
+        }
 
         user.setUsername(userEntity.getUsername());
         user.setAuthority(userEntity.getAuthority());
         user.setEmail(userEntity.getEmail());
         user.setPassword(userEntity.getPassword());
         user.setBirthday(userEntity.getBirthday());
-
+        user.setEnabled(userEntity.isEnabled());
+        user.setCredentialsNonExpired(userEntity.isCredentialsNonExpired());
+        user.setNonLocked(userEntity.isAccountNonLocked());
+        user.setNonExpired(userEntity.isAccountNonExpired());
         return user;
     }
 
-    public User toModelWithRoles(UserEntity userEntity) {
+    public User toModelWithRoles (UserEntity userEntity){
 
 
         User user = this.toModel(userEntity);
 
-        if(Objects.nonNull(userEntity.getRoles())) {
+        if (Objects.nonNull(userEntity.getRoles())) {
             Collection<Role> roles = Objects.isNull(userEntity.getRoles())
                     ? null
                     : userEntity.getRoles()
-                                .stream()
-                                .map(roleConverter::toModel).collect(Collectors.toSet());
+                    .stream()
+                    .map(roleConverter::toModel).collect(Collectors.toSet());
             user.setRoles(roles);
         }
         return user;

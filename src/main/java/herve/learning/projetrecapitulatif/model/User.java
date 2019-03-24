@@ -17,9 +17,14 @@ public class User {
 
     private LocalDateTime birthday;
 
-    private Collection<Role> roles;
-
     private String authority;
+
+    private Boolean enabled;
+    private Boolean nonExpired;
+    private Boolean nonLocked;
+    private Boolean credentialsNonExpired;
+
+    private Collection<Role> roles;
 
     public User() {
     }
@@ -91,6 +96,51 @@ public class User {
             roles.add(role);
 
         this.authority = role.getAuthority();
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Boolean getNonExpired() {
+        return nonExpired;
+    }
+
+    public void setNonExpired(Boolean nonExpired) {
+        this.nonExpired = nonExpired;
+    }
+
+    public Boolean getNonLocked() {
+        return nonLocked;
+    }
+
+    public void setNonLocked(Boolean nonLocked) {
+        this.nonLocked = nonLocked;
+    }
+
+    public Boolean getCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getId(), user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 
     @Override

@@ -58,12 +58,14 @@ public class UserServiceImpl implements UserService {
     public Collection<User> findAll(){
 
         return userDAO.findAll().stream()
-                .map(userEntity -> userConverter.toModel(userEntity))
+                .map(userEntity -> userConverter.toModelWithRoles(userEntity))
                 .collect(Collectors.toSet());
     }
 
     @Override
     public User save(User user) throws CustomException {
+
+        setUserSecurityParameter(user);
 
         Role role = this.createRoleIfNotExist("ROLE_USER");
 
@@ -100,7 +102,7 @@ public class UserServiceImpl implements UserService {
     public Collection<User> findAllWithPagination(Pageable pageable){
 
         Collection<UserEntity> userEntities = userDAO.findAllWithPagination(pageable);
-        return userEntities.stream().map(userConverter::toModel).collect(Collectors.toSet());
+        return userEntities.stream().map(userConverter::toModelWithRoles).collect(Collectors.toSet());
     }
 
     private UserEntity getUserEntityConnected() {
@@ -131,6 +133,14 @@ public class UserServiceImpl implements UserService {
         userAuthenticated = userConverter.toEntityWithRoles(userToBeSaved);
 
         return userAuthenticated;
+    }
+
+    private void setUserSecurityParameter(User user){
+
+        user.setEnabled(true);
+        user.setNonExpired(true);
+        user.setNonLocked(true);
+        user.setCredentialsNonExpired(true);
     }
 
 }

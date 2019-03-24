@@ -146,6 +146,22 @@ public class UserEntity implements UserDetails {
         return Objects.equals(getId(), that.getId());
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(getId());
