@@ -13,7 +13,10 @@ public class Constant {
     public static final String Role_IS_NULL = "RoleIsNull";
 
     public static final String CAR_IS_NULL = "CarIsNull";
+    public static final String CAR_DO_NOT_EXISTS = "CarDoNotExists";
 
+
+    public static final String BAD_OBJECT = "BadObject";
 
     public static final long ACCESS_TOKEN_VALIDITY_SECONDS = 5*60*60;
     public static final String SIGNING_KEY = "Herve";

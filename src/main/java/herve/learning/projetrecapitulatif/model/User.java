@@ -25,6 +25,7 @@ public class User {
     private Boolean credentialsNonExpired;
 
     private Collection<Role> roles;
+    private Collection<Car> cars;
 
     public User() {
     }
@@ -128,6 +129,14 @@ public class User {
 
     public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
+    }
+
+    public Collection<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(Collection<Car> cars) {
+        this.cars = cars;
     }
 
     @Override

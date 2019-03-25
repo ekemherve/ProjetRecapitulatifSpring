@@ -28,6 +28,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/api/token",
             "/api/user/sendEmail",
             "/api/user/**",
+            "/api/car/**"
     };
 
     private final String[] authorizedGetPaths = {

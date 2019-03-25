@@ -1,6 +1,7 @@
 package herve.learning.projetrecapitulatif.dataaccess.util;
 
 import herve.learning.projetrecapitulatif.dataaccess.entity.CarEntity;
+import herve.learning.projetrecapitulatif.dataaccess.entity.UserEntity;
 import herve.learning.projetrecapitulatif.model.Car;
 import org.springframework.stereotype.Component;
 
@@ -23,12 +24,13 @@ public class CarConverter {
 
         car.setBrand(carEntity.getBrand());
         car.setModel(carEntity.getModel());
+        car.setSold(carEntity.getSold());
         car.setCreation(carEntity.getCreation());
 
         return car;
     }
 
-    public CarEntity toEntity(Car car) {
+    public CarEntity toEntity(Car car, UserEntity userEntity) {
 
         if(Objects.isNull(car))
             throw new IllegalArgumentException(CAR_IS_NULL);
@@ -40,7 +42,11 @@ public class CarConverter {
 
         carEntity.setBrand(car.getBrand());
         carEntity.setModel(car.getModel());
+        carEntity.setSold(car.getSold());
         carEntity.setCreation(car.getCreation());
+
+        if(Objects.nonNull(userEntity))
+            carEntity.setUser(userEntity);
 
         return carEntity;
     }

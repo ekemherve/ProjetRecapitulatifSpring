@@ -23,7 +23,7 @@ public class CarDAO {
         return carRepository.save(carEntity);
     }
 
-    public Collection<CarEntity> findAll(CarEntity carEntity){
+    public Collection<CarEntity> findAll(){
 
         return carRepository.findAll();
     }

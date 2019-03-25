@@ -43,7 +43,7 @@ public class UserDAO {
 
     public UserEntity findByUsername(String username) {
 
-        return userRepository.findByEmail(username);
+        return userRepository.findByUsername(username);
     }
 
     public UserEntity findByUsernameOrEmail(String username, String email) {

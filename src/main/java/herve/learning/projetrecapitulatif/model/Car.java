@@ -8,6 +8,7 @@ public class Car {
     private Long id;
     private String brand;
     private String model;
+    private Boolean sold;
     private LocalDate creation;
     private User user;
 
@@ -36,6 +37,14 @@ public class Car {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public Boolean getSold() {
+        return sold;
+    }
+
+    public void setSold(Boolean sold) {
+        this.sold = sold;
     }
 
     public LocalDate getCreation() {

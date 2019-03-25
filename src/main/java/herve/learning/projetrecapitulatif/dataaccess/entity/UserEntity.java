@@ -51,6 +51,9 @@ public class UserEntity implements UserDetails {
                inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Collection<RoleEntity> roles;
 
+    @OneToMany(mappedBy = "user")
+    private Collection<CarEntity> cars;
+
     public UserEntity() {
     }
 

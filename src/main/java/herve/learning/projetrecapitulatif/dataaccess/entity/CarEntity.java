@@ -14,7 +14,10 @@ public class CarEntity {
 
     private String brand;
     private String model;
+    private Boolean sold;
     private LocalDate creation;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     private UserEntity user;
 
     public CarEntity() {
@@ -42,6 +45,14 @@ public class CarEntity {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public Boolean getSold() {
+        return sold;
+    }
+
+    public void setSold(Boolean sold) {
+        this.sold = sold;
     }
 
     public LocalDate getCreation() {
