@@ -4,8 +4,11 @@ import herve.learning.projetrecapitulatif.exception.CustomException;
 import herve.learning.projetrecapitulatif.model.Car;
 import herve.learning.projetrecapitulatif.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -49,5 +52,31 @@ public class CarController {
     public ResponseEntity<Collection<Car>> findAll() {
 
         return ResponseEntity.ok(carService.findAll());
+    }
+
+    @GetMapping(value = "/count")
+    public ResponseEntity countCarsIndatabase() {
+        int taille = carService.findAll().size();
+        return ResponseEntity.ok(taille);
+    }
+
+    @GetMapping(value = "/countsize")
+    public ResponseEntity countCars() {
+        Collection<Integer> taille = carService.findSoldAndUnSoldCarsSize();
+        return ResponseEntity.ok(taille);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping(value = "/unsold")
+    public ResponseEntity findUnSoldCars(@RequestParam int page, @RequestParam int size){
+
+        return ResponseEntity.ok(carService.findUnSoldCar(PageRequest.of(page, size)));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping(value = "/sold")
+    public ResponseEntity findSoldCars(@RequestParam int page, @RequestParam int size){
+
+        return ResponseEntity.ok(carService.findSoldCars(PageRequest.of(page, size)));
     }
 }

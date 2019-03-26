@@ -10,10 +10,11 @@ import herve.learning.projetrecapitulatif.model.Car;
 import herve.learning.projetrecapitulatif.securite.authentication.AuthenticationFacadeService;
 import herve.learning.projetrecapitulatif.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static herve.learning.projetrecapitulatif.model.Constant.*;
@@ -82,9 +83,57 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public Collection<Car> findUnSoldCar(Pageable pageable) {
+
+        UserEntity userEntity = userDAO.findByUsername(authenticationFacadeService.getAuthenticated());
+
+        if(Objects.isNull(userEntity))
+            throw new IllegalArgumentException(USER_DOESNT_EXIST);
+
+        Page<CarEntity> page = carDAO.findUnSoldCars(userEntity, pageable);
+
+        Collection<CarEntity> cars = page.getContent();
+
+        return cars.stream().map(carConverter::toModel).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Collection<Integer> findSoldAndUnSoldCarsSize() {
+
+        int nbSold = 0, nbUnSold = 0;
+        for(Car car : findAll()){
+
+            if(car.getSold())
+                ++nbSold;
+            else ++nbUnSold;
+        }
+        Collection<Integer> size = new ArrayList<>();
+        size.add(nbSold);
+        size.add(nbUnSold);
+        return size;
+    }
+
+    @Override
+    public Collection<Car> findSoldCars(Pageable pageable) {
+
+        UserEntity userEntity = userDAO.findByUsername(authenticationFacadeService.getAuthenticated());
+
+        if(Objects.isNull(userEntity))
+            throw new IllegalArgumentException(USER_DOESNT_EXIST);
+
+        Page<CarEntity> page = carDAO.findSoldCars(userEntity, pageable);
+
+        Collection<CarEntity> cars = page.getContent();
+
+        return cars.stream().map(carConverter::toModel).collect(Collectors.toSet());
+    }
+
+    @Override
     public Collection<Car> findAll() {
         return carDAO.findAll().stream()
                 .map(carConverter::toModel)
                 .collect(Collectors.toSet());
     }
+
+
 }
