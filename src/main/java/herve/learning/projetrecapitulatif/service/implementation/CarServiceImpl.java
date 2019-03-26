@@ -52,6 +52,8 @@ public class CarServiceImpl implements CarService {
         if(Objects.isNull(userEntity) || !Objects.equals(authenticationFacadeService.getAuthenticated(), userEntity.getUsername()))
             throw new CustomException(USER_DOESNT_EXIST);
 
+        if(car.getSold() == null)
+            car.setSold(false);
         CarEntity carEntity = carConverter.toEntity(car, userEntity);
         carEntity = carDAO.save(carEntity);
         return  carConverter.toModel(carEntity);
@@ -76,6 +78,8 @@ public class CarServiceImpl implements CarService {
         if(Objects.isNull(userEntity) || !Objects.equals(authenticationFacadeService.getAuthenticated(), userEntity.getUsername()))
             throw new CustomException(USER_DOESNT_EXIST);
 
+        if(car.getSold() == null)
+            car.setSold(false);
         car.getUser().setId(userEntity.getId());
         carEntity = carConverter.toEntity(car, userEntity);
         carEntity = carDAO.save(carEntity);
@@ -98,10 +102,17 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Collection<Integer> findSoldAndUnSoldCarsSize() {
+    public Collection<Integer> findSoldAndUnSoldCarsSize(String username) throws CustomException {
+
+        if(!Objects.equals(authenticationFacadeService.getAuthenticated(), username))
+            throw new CustomException(USER_NOT_AUTHENTICATED);
+
+        UserEntity userEntity = userDAO.findByUsername(username);
+
+        Collection<CarEntity> cars = carDAO.findByUser(userEntity);
 
         int nbSold = 0, nbUnSold = 0;
-        for(Car car : findAll()){
+        for(CarEntity car : cars){
 
             if(car.getSold())
                 ++nbSold;
@@ -134,6 +145,7 @@ public class CarServiceImpl implements CarService {
                 .map(carConverter::toModel)
                 .collect(Collectors.toSet());
     }
+
 
 
 }

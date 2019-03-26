@@ -60,9 +60,14 @@ public class CarController {
         return ResponseEntity.ok(taille);
     }
 
-    @GetMapping(value = "/countsize")
-    public ResponseEntity countCars() {
-        Collection<Integer> taille = carService.findSoldAndUnSoldCarsSize();
+    @GetMapping(value = "/countsize/{username}")
+    public ResponseEntity countCars(@PathVariable String username) {
+        Collection<Integer> taille ;
+        try {
+            taille = carService.findSoldAndUnSoldCarsSize(username);
+        } catch (CustomException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
         return ResponseEntity.ok(taille);
     }
 

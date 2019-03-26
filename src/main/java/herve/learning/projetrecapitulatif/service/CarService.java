@@ -13,6 +13,6 @@ public interface CarService {
     Collection<Car> findAll();
     Car update(Car car) throws CustomException;
     Collection<Car> findUnSoldCar(Pageable pageable);
-    Collection<Integer> findSoldAndUnSoldCarsSize();
+    Collection<Integer> findSoldAndUnSoldCarsSize(String username) throws CustomException;
     Collection<Car> findSoldCars(Pageable pageable);
 }

@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+
 @Repository
 @Transactional
 public interface CarRepository extends JpaRepository<CarEntity, Long> {
 
     Page<CarEntity> findByUserAndSoldIsFalse(UserEntity user, Pageable pageable);
     Page<CarEntity> findByUserAndSoldIsTrue(UserEntity user, Pageable pageable);
+    Collection<CarEntity> findByUser(UserEntity userEntity);
 }

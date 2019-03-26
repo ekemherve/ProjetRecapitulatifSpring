@@ -45,4 +45,8 @@ public class CarDAO {
 
         return carRepository.findByUserAndSoldIsTrue(userEntity, pageable);
     }
+
+    public Collection<CarEntity> findByUser(UserEntity userEntity){
+        return  carRepository.findByUser(userEntity);
+    }
 }
