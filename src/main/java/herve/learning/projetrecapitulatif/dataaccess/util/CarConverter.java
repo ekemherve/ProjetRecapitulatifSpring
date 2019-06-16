@@ -30,7 +30,7 @@ public class CarConverter {
         return car;
     }
 
-    public CarEntity toEntity(Car car, UserEntity userEntity) {
+    public CarEntity toEntity(Car car) {
 
         if(Objects.isNull(car))
             throw new IllegalArgumentException(CAR_IS_NULL);
@@ -45,9 +45,15 @@ public class CarConverter {
         carEntity.setSold(car.getSold());
         carEntity.setCreation(car.getCreation());
 
+        return carEntity;
+    }
+
+    public CarEntity toEntityWithUser(Car car, UserEntity userEntity) {
+
+        CarEntity carEntity = this.toEntity(car);
+
         if(Objects.nonNull(userEntity))
             carEntity.setUser(userEntity);
-
         return carEntity;
     }
 

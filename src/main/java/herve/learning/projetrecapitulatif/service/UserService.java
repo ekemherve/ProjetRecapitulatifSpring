@@ -11,11 +11,15 @@ public interface UserService {
 
     User findById(Long id);
 
-    void delete(User user);
+    void delete(Long id);
 
     Collection<User> findAll();
 
     User update(User user) throws CustomException;
 
     Collection<User> findAllWithPagination(Pageable pageable);
+
+    User setRole(String role) throws CustomException;
+
+    User findByUsername(String username) throws CustomException;
 }

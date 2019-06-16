@@ -7,6 +7,7 @@ public class Constant {
     public static final String USER_DOESNT_EXIST = "UserDoNotExists";
     public static final String USERNAME_OR_EMAIL_ALREADY_EXIST = "UserOrEmailAlreadyExist";
     public static final String USER_NOT_AUTHENTICATED = "UserNotAuthenticated!!!";
+    public static final String USER_DOESNT_HAVE_PERMISSION = "UserDoNotHavePermission";
 
     public static final String ROLE_ALREADY_EXISTS = "RoleAlreadyExists";
     public static final String ROLE_NOT_EXISTS = "RoleDoNotExists";
@@ -23,7 +24,5 @@ public class Constant {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String AUTHORITIES_KEY = "scopes";
-
-
 
 }

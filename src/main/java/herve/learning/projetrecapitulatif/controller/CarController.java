@@ -25,6 +25,7 @@ public class CarController {
         this.carService = carService;
     }
 
+     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity save(@RequestBody Car car) {
 
@@ -36,6 +37,7 @@ public class CarController {
         return ResponseEntity.ok(car);
     }
 
+    @PreAuthorize("hasRole('ROLE_AMDIN')")
     @PutMapping
     public ResponseEntity update(@RequestBody Car car) {
 
@@ -46,7 +48,6 @@ public class CarController {
         }
         return ResponseEntity.ok(car);
     }
-
 
     @GetMapping()
     public ResponseEntity<Collection<Car>> findAll() {
@@ -71,17 +72,26 @@ public class CarController {
         return ResponseEntity.ok(taille);
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping(value = "/unsold")
     public ResponseEntity findUnSoldCars(@RequestParam int page, @RequestParam int size){
 
         return ResponseEntity.ok(carService.findUnSoldCar(PageRequest.of(page, size)));
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping(value = "/sold")
     public ResponseEntity findSoldCars(@RequestParam int page, @RequestParam int size){
 
         return ResponseEntity.ok(carService.findSoldCars(PageRequest.of(page, size)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity findById(@PathVariable Long id) {
+        try {
+            return  ResponseEntity.ok(carService.findById(id));
+        } catch (CustomException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

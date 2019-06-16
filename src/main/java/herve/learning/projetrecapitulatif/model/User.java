@@ -17,8 +17,6 @@ public class User {
 
     private LocalDateTime birthday;
 
-    private String authority;
-
     private Boolean enabled;
     private Boolean nonExpired;
     private Boolean nonLocked;
@@ -78,14 +76,6 @@ public class User {
         this.birthday = birthday;
     }
 
-    public String getAuthority() {
-        return authority;
-    }
-
-    public void setAuthority(String authority) {
-        this.authority = authority;
-    }
-
     public void addRole(Role role){
 
         if(Objects.isNull(this.roles)){
@@ -95,8 +85,6 @@ public class User {
         }
         if(!roles.contains(role))
             roles.add(role);
-
-        this.authority = role.getAuthority();
     }
 
     public Boolean getEnabled() {

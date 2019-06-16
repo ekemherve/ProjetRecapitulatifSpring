@@ -28,9 +28,6 @@ public class UserEntity implements UserDetails {
     private String password;
 
     @Column
-    private String authority;
-
-    @Column
     private LocalDateTime birthday;
 
     @Column(name = "enabled")
@@ -55,6 +52,13 @@ public class UserEntity implements UserDetails {
     private Collection<CarEntity> cars;
 
     public UserEntity() {
+    }
+
+    public UserEntity(String username, String email, String password, LocalDateTime birthday) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.birthday = birthday;
     }
 
     @Override
@@ -133,14 +137,6 @@ public class UserEntity implements UserDetails {
         this.roles = roles;
     }
 
-    public String getAuthority() {
-        return authority;
-    }
-
-    public void setAuthority(String authority) {
-        this.authority = authority;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -165,6 +161,12 @@ public class UserEntity implements UserDetails {
         this.accountNonLocked = accountNonLocked;
     }
 
+    public void addRole(RoleEntity roleEntity) {
+        if(!this.getAuthorities().contains(roleEntity)) {
+            roles.add(roleEntity);
+        }
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(getId());
@@ -178,6 +180,7 @@ public class UserEntity implements UserDetails {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", birthday='" + birthday + '\'' +
+                ", roles='" + getAuthorities() +
                 '}';
     }
 }

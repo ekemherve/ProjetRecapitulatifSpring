@@ -10,8 +10,10 @@ import java.util.Collection;
 public interface CarService {
 
     Car save(Car car) throws CustomException;
-    Collection<Car> findAll();
+    Car findById(Long id) throws CustomException;
     Car update(Car car) throws CustomException;
+    Collection<Car> findAll();
+
     Collection<Car> findUnSoldCar(Pageable pageable);
     Collection<Integer> findSoldAndUnSoldCarsSize(String username) throws CustomException;
     Collection<Car> findSoldCars(Pageable pageable);

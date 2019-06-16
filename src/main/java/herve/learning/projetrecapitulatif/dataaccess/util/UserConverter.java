@@ -39,7 +39,6 @@ public class UserConverter {
             userEntity.setId(user.getId());
 
         userEntity.setUsername(user.getUsername());
-        userEntity.setAuthority(user.getAuthority());
         userEntity.setEmail(user.getEmail());
         userEntity.setPassword(encoder.encode(user.getPassword()));
         userEntity.setBirthday(user.getBirthday());
@@ -79,7 +78,6 @@ public class UserConverter {
         }
 
         user.setUsername(userEntity.getUsername());
-        user.setAuthority(userEntity.getAuthority());
         user.setEmail(userEntity.getEmail());
         user.setPassword(userEntity.getPassword());
         user.setBirthday(userEntity.getBirthday());

@@ -49,9 +49,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(User user) {
+    public void delete(Long id) {
 
-        this.userDAO.delete(userConverter.toEntityWithRoles(user));
+        UserEntity userEntity = userDAO.findOne(id);
+        this.userDAO.delete(userEntity);
     }
 
     @Override
@@ -67,15 +68,15 @@ public class UserServiceImpl implements UserService {
 
         setUserSecurityParameter(user);
 
-        Role role = this.createRoleIfNotExist("ROLE_USER");
+        Role role = this.convertToRole(createRoleIfNotExist("ROLE_ADMIN"));
 
-        UserEntity userEntity = userDAO.findByUsernameOrEmail(user.getUsername(), user.getEmail());
+        Collection<UserEntity> userEntities = userDAO.findByUsernameOrEmail(user.getUsername(), user.getEmail());
 
-        if(Objects.nonNull(userEntity))
+        if(Objects.nonNull(userEntities) && userEntities.size() > 0)
             throw new CustomException(USER_ALREADY_EXISTS);
 
         user.addRole(role);
-        userEntity = userConverter.toEntityWithRoles(user);
+        UserEntity userEntity = userConverter.toEntityWithRoles(user);
         userEntity = userDAO.save(userEntity);
 
         return userConverter.toModelWithRoles(userEntity);
@@ -91,10 +92,23 @@ public class UserServiceImpl implements UserService {
         return userConverter.toModelWithRoles(userToSave);
     }
 
-    private Role createRoleIfNotExist(String authority){
+    @Override
+    public User findByUsername(String username) throws CustomException {
 
-        RoleEntity roleEntity = roleDAO.createRoleIfNotExist(authority);
+        if(Objects.isNull(username))
+            throw new IllegalArgumentException(USER_IS_NULL);
+        UserEntity userEntity = userDAO.findByUsername(username);
+        if(Objects.isNull(userEntity))
+            throw new CustomException(USER_DOESNT_EXIST);
 
+        return userConverter.toModelWithRoles(userEntity);
+    }
+
+    private RoleEntity createRoleIfNotExist(String authority){
+        return roleDAO.createRoleIfNotExist(authority);
+    }
+
+    private Role convertToRole(RoleEntity roleEntity) {
         return roleConverter.toModel(roleEntity);
     }
 
@@ -105,37 +119,54 @@ public class UserServiceImpl implements UserService {
         return userEntities.stream().map(userConverter::toModelWithRoles).collect(Collectors.toSet());
     }
 
+    @Override
+    public User setRole(String role) throws CustomException {
+
+        String username = authenticationFacadeService.getAuthenticated();
+        if(Objects.isNull(username))
+                throw new CustomException(USER_DOESNT_EXIST);
+        UserEntity userEntity = userDAO.findByUsername(username);
+        userEntity.addRole(createRoleIfNotExist(role));
+        userEntity = userDAO.save(userEntity);
+        return userConverter.toModelWithRoles(userEntity);
+    }
+
     private UserEntity getUserEntityConnected() {
         String username = authenticationFacadeService.getAuthentication().getName();
         return userDAO.findByUsername(username);
     }
 
-    private UserEntity getValidUserOrThrowException(User userToBeSaved) throws CustomException {
+    private UserEntity getValidUserOrThrowException(User userToBeUpdated) throws CustomException {
 
-        UserEntity userAuthenticated = this.getUserEntityConnected();
+        UserEntity userAuthenticated = userDAO.findByUsername(authenticationFacadeService.getAuthenticated());
 
-        if(Objects.isNull(userAuthenticated)){
+        if(Objects.isNull(userAuthenticated))
             throw new CustomException(USER_NOT_AUTHENTICATED);
-        }
+        if(Objects.isNull(userToBeUpdated))
+            throw new CustomException(USER_IS_NULL);
 
-        if(Objects.isNull(userToBeSaved)){
-            throw new IllegalArgumentException(USER_DOESNT_EXIST);
-        }
+        Collection<UserEntity> usersFound = userDAO.findByUsernameOrEmailWithoutCurrentUser(userToBeUpdated.getUsername(),
+                userToBeUpdated.getEmail(), userAuthenticated.getId());
 
-        UserEntity userFound = userDAO.findByUsernameOrEmail(userToBeSaved.getUsername(), userToBeSaved.getEmail());
-
-        if(Objects.nonNull(userFound) && !Objects.equals(userFound, userAuthenticated)){
-
+        if(Objects.nonNull(usersFound) && usersFound.size()>0)
             throw new CustomException(USERNAME_OR_EMAIL_ALREADY_EXIST);
+
+        // If the password is the same, we don't want to encrypt the password again, so we set userAuthenticated
+        // fields other than the password and we return it to be saved
+        if(Objects.equals(userAuthenticated.getPassword(),userToBeUpdated.getPassword())) {
+            this.setUser(userAuthenticated, userToBeUpdated);
+            return userAuthenticated;
         }
 
-        userToBeSaved.setId(userAuthenticated.getId());
-        userAuthenticated = userConverter.toEntityWithRoles(userToBeSaved);
+        // If the password change we need to encrypt it
+        userToBeUpdated.setId(userAuthenticated.getId());
+        this.setUserSecurityParameter(userToBeUpdated);
+        userAuthenticated = userConverter.toEntityWithRoles(userToBeUpdated);
 
         return userAuthenticated;
     }
 
-    private void setUserSecurityParameter(User user){
+    private void setUserSecurityParameter(User user) {
 
         user.setEnabled(true);
         user.setNonExpired(true);
@@ -143,4 +174,9 @@ public class UserServiceImpl implements UserService {
         user.setCredentialsNonExpired(true);
     }
 
+    private void setUser(UserEntity userFromDataBase, User newUser) {
+        userFromDataBase.setUsername(newUser.getUsername());
+        userFromDataBase.setEmail(newUser.getEmail());
+        userFromDataBase.setBirthday(newUser.getBirthday());
+    }
 }

@@ -46,7 +46,17 @@ public class UserDAO {
         return userRepository.findByUsername(username);
     }
 
-    public UserEntity findByUsernameOrEmail(String username, String email) {
+    public Collection<UserEntity> findByUsernameOrEmailAndIdNotContains(String username, String email, Long id) {
+
+        return userRepository.findByUsernameOrEmailAndIdNotContains(username, email, id);
+    }
+
+    public Collection<UserEntity> findByUsernameOrEmailWithoutCurrentUser(String username, String email, Long id) {
+
+        return userRepository.findByUsernameOrEmailWithoutCurrentUser(username, email, id);
+    }
+
+    public Collection<UserEntity> findByUsernameOrEmail(String username, String email) {
 
         return userRepository.findByUsernameOrEmail(username, email);
     }

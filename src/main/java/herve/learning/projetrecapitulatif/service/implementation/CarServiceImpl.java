@@ -12,6 +12,7 @@ import herve.learning.projetrecapitulatif.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -38,23 +39,21 @@ public class CarServiceImpl implements CarService {
         this.authenticationFacadeService = authenticationFacadeService;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     public Car save(Car car) throws CustomException {
 
         if(Objects.isNull(car))
             throw new IllegalArgumentException(CAR_IS_NULL);
 
-        if(Objects.isNull(car.getUser()))
-            throw new IllegalArgumentException(BAD_OBJECT);
+        String username = authenticationFacadeService.getAuthenticated();
 
-        UserEntity userEntity = userDAO.findByUsername(car.getUser().getUsername());
-
-        if(Objects.isNull(userEntity) || !Objects.equals(authenticationFacadeService.getAuthenticated(), userEntity.getUsername()))
-            throw new CustomException(USER_DOESNT_EXIST);
+        if(Objects.isNull(username))
+            throw new CustomException(USER_DOESNT_HAVE_PERMISSION);
 
         if(car.getSold() == null)
             car.setSold(false);
-        CarEntity carEntity = carConverter.toEntity(car, userEntity);
+        CarEntity carEntity = carConverter.toEntity(car);
         carEntity = carDAO.save(carEntity);
         return  carConverter.toModel(carEntity);
     }
@@ -65,23 +64,18 @@ public class CarServiceImpl implements CarService {
         if(Objects.isNull(car))
             throw new IllegalArgumentException(CAR_IS_NULL);
 
-        if(Objects.isNull(car.getUser()))
-            throw new IllegalArgumentException(BAD_OBJECT);
-
         CarEntity carEntity = carDAO.findById(car.getId()).orElse(null);
 
         if(Objects.isNull(carEntity))
             throw new CustomException(CAR_DO_NOT_EXISTS);
 
-        UserEntity userEntity = userDAO.findByUsername(car.getUser().getUsername());
-
-        if(Objects.isNull(userEntity) || !Objects.equals(authenticationFacadeService.getAuthenticated(), userEntity.getUsername()))
+        if(Objects.isNull(authenticationFacadeService.getAuthenticated()))
             throw new CustomException(USER_DOESNT_EXIST);
 
         if(car.getSold() == null)
             car.setSold(false);
-        car.getUser().setId(userEntity.getId());
-        carEntity = carConverter.toEntity(car, userEntity);
+
+        carEntity = carConverter.toEntity(car);
         carEntity = carDAO.save(carEntity);
         return carConverter.toModel(carEntity);
     }
@@ -140,12 +134,20 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public Car findById(Long id) throws CustomException {
+
+        Optional<CarEntity> optional = carDAO.findById(id);
+        if(!optional.isPresent())
+            throw new CustomException(CAR_DO_NOT_EXISTS);
+        CarEntity carEntity = optional.get();
+        return carConverter.toModel(carEntity);
+    }
+
+    @Override
     public Collection<Car> findAll() {
         return carDAO.findAll().stream()
                 .map(carConverter::toModel)
                 .collect(Collectors.toSet());
     }
-
-
 
 }
